@@ -10,17 +10,17 @@ import (
 # 引数:ax+by = c の a,b
 # 戻値:リスト(c,x,y)
 */
-func egcd(a, b *big.Int) (*big.Int, *big.Int, *big.Int) {
+func Egcd(a, b *big.Int) (*big.Int, *big.Int, *big.Int) {
 	if a.Cmp(big.NewInt(0)) == 0 {
 		return b, big.NewInt(0), big.NewInt(1)
 	} else {
-		g, x, y := egcd(big.NewInt(0).Mod(b, a), a)
+		g, x, y := Egcd(big.NewInt(0).Mod(b, a), a)
 		//Goではintとintの商はint
 		return g, big.NewInt(0).Sub(y,  big.NewInt(0).Mul( big.NewInt(0).Div(b, a), x) ), x
 	}
 }
 
-func gcd(a, b *big.Int) *big.Int {
+func Gcd(a, b *big.Int) *big.Int {
 	for b.Cmp(big.NewInt(0)) == 1 {
 		var newB *big.Int
         newB.Mod(a, b)
@@ -30,21 +30,21 @@ func gcd(a, b *big.Int) *big.Int {
     return a
 }
 
-func lcm(a, b *big.Int) *big.Int {
-	return big.NewInt(0).Div( big.NewInt(0).Mul(a,b), gcd(a, b) )
+func Lcm(a, b *big.Int) *big.Int {
+	return big.NewInt(0).Div( big.NewInt(0).Mul(a,b), Gcd(a, b) )
 }
 
 /*
 #鍵生成
 */
-func generate_keys(p, q, e *big.Int) (*big.Int, *big.Int, *big.Int, *big.Int) {
+func Generate_keys(p, q, e *big.Int) (*big.Int, *big.Int, *big.Int, *big.Int) {
 	var N *big.Int
 	N.Mul(p, q)
 	var L *big.Int
-	L.Add(big.NewInt(0), lcm(big.NewInt(0).Sub(p, big.NewInt(1)), big.NewInt(0).Sub(q, big.NewInt(1))))
+	L.Add(big.NewInt(0), Lcm(big.NewInt(0).Sub(p, big.NewInt(1)), big.NewInt(0).Sub(q, big.NewInt(1))))
     
     var  x *big.Int
-	_, x, _ = egcd(e, L)
+	_, x, _ = Egcd(e, L)
 
 	var d *big.Int
 	d.Mod(x, L)
@@ -56,7 +56,7 @@ func generate_keys(p, q, e *big.Int) (*big.Int, *big.Int, *big.Int, *big.Int) {
 /*
 #暗号化
 */
-func encrypt(plain_text string, e *big.Int, N *big.Int) []*big.Int {
+func Encrypt(plain_text string, e *big.Int, N *big.Int) []*big.Int {
 	plain_bytes := []byte(plain_text)
 	var plain_integers []*big.Int
 	for _, item := range plain_bytes {
@@ -88,7 +88,7 @@ func Bytes2str(bytes ...byte) string {
 /*
 #復号
 */
-func decrypt(encrypted_integers []*big.Int, d *big.Int, N *big.Int) string {
+func Decrypt(encrypted_integers []*big.Int, d *big.Int, N *big.Int) string {
 	var plain_integers []*big.Int
 	for _, item := range encrypted_integers {
 		var newPlainInt *big.Int
@@ -123,14 +123,14 @@ func testmain() {
     var plain string
 	plain = "FLAG{hello}"
     var N, d *big.Int
-	e, N, d, N = generate_keys(p, q, e)
+	e, N, d, N = Generate_keys(p, q, e)
 
     var encrypted_integers []*big.Int
-	encrypted_integers = encrypt(plain, e, N)
+	encrypted_integers = Encrypt(plain, e, N)
 	fmt.Print(encrypted_integers)
 
 	var decrypted_text string
-    decrypted_text = decrypt(encrypted_integers, d, N)
+    decrypted_text = Decrypt(encrypted_integers, d, N)
 	fmt.Print(decrypted_text)
 }
 
@@ -142,11 +142,11 @@ func main() {
 #############
 #! -*- coding:utf-8 -*-
 
-def egcd(a, b):
+def Egcd(a, b):
     if a == 0:
         return (b, 0, 1)
     else:
-        g, x, y = egcd(b % a, a)
+        g, x, y = Egcd(b % a, a)
         return (g, y - (b // a) * x, x)
 
 #最大公約数
@@ -156,25 +156,25 @@ def gcd(a,b):
     return a
 
 #最小公倍数
-def lcm(a, b):
+def Lcm(a, b):
     #整数割り算にしないとfloatがオーバーフローするとかでてとまる
     return a * b // gcd(a, b)
 
 #(借り物)
 #def modinv(a, m):
-#    g, x, y = egcd(a, m)
+#    g, x, y = Egcd(a, m)
 #    if g != 1:
 #        raise Exception('No modular inverse')
 #    return x%m
 
 #鍵生成
-def generate_keys(p, q, e=65537):
+def Generate_keys(p, q, e=65537):
     N = p * q
-    L = lcm(p - 1, q - 1)
+    L = Lcm(p - 1, q - 1)
     #もしくは、
     #L = (p-1)*(q-1)//gcd(p-1, q-1)
 
-    c, x, y = egcd(e, L)
+    c, x, y = Egcd(e, L)
     d = x % L
     #こちらでもよい?
     #d = inverse(e, L)
@@ -184,7 +184,7 @@ def generate_keys(p, q, e=65537):
     return (e, N), (d, N)
 
 #暗号化
-def encrypt(plain_text, public_key):
+def Encrypt(plain_text, public_key):
     e, N = public_key
     plain_bytes = plain_text.encode("UTF-8")
     plain_integer = int.from_bytes(plain_bytes, 'big')
@@ -195,7 +195,7 @@ def encrypt(plain_text, public_key):
 
 
 #復号
-def decrypt(encrypted_bytes, private_key):
+def Decrypt(encrypted_bytes, private_key):
     d, N = private_key
     encrypted_integer = int.from_bytes(encrypted_bytes, 'big')
     plain_integer = pow(encrypted_integer, d, N)
@@ -211,11 +211,11 @@ p = 54311
 q = 158304142767773473275973624083670689370769915077762416888835511454118432478825486829242855992134819928313346652550326171670356302948444602468194484069516892927291240140200374848857608566129161693687407393820501709299228594296583862100570595789385365606706350802643746830710894411204232176703046334374939501731
 
 plain = "FLAG{hello}"
-pub_key, priv_key = generate_keys(p, q)
+pub_key, priv_key = Generate_keys(p, q)
 
-encrypted_bytes = encrypt(plain, pub_key )
+encrypted_bytes = Encrypt(plain, pub_key )
 print(encrypted_bytes)
 
-decrypted_text = decrypt(encrypted_bytes, priv_key)
+decrypted_text = Decrypt(encrypted_bytes, priv_key)
 print(decrypted_text)
 */
