@@ -133,11 +133,11 @@ func testmain() {
 
     var encrypted_integers []*big.Int
 	encrypted_integers = Encrypt(plain, e, N)
-	fmt.Print(encrypted_integers)
+	fmt.Println(encrypted_integers)
 
 	var decrypted_text string
     decrypted_text = Decrypt(encrypted_integers, d, N)
-	fmt.Print(decrypted_text)
+	fmt.Println(decrypted_text)
 }
 
 func main() {
