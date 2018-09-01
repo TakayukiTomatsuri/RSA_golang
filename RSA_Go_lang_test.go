@@ -1,8 +1,8 @@
 package main
 
 import (
-	"testing"
 	"math/big"
+	"testing"
 )
 
 func TestEgcd(t *testing.T) {
