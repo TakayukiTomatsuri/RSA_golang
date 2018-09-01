@@ -22,7 +22,9 @@ func Egcd(a, b *big.Int) (*big.Int, *big.Int, *big.Int) {
 
 func Gcd(a, b *big.Int) *big.Int {
 	for b.Cmp(big.NewInt(0)) == 1 {
-		var newB *big.Int
+		//この書き方をすると初期化忘れてヌルポになりやすいのでGoっぽい良い書き方がないか探す
+        var newB *big.Int
+        newB = big.NewInt(0)
         newB.Mod(a, b)
 		a.Add(b, big.NewInt(0))
         b.Add(newB, big.NewInt(0))
@@ -39,14 +41,18 @@ func Lcm(a, b *big.Int) *big.Int {
 */
 func Generate_keys(p, q, e *big.Int) (*big.Int, *big.Int, *big.Int, *big.Int) {
 	var N *big.Int
-	N.Mul(p, q)
+	N = big.NewInt(0)
+    N.Mul(p, q)
 	var L *big.Int
+    L = big.NewInt(0)
 	L.Add(big.NewInt(0), Lcm(big.NewInt(0).Sub(p, big.NewInt(1)), big.NewInt(0).Sub(q, big.NewInt(1))))
     
     var  x *big.Int
+    x = big.NewInt(0)
 	_, x, _ = Egcd(e, L)
 
 	var d *big.Int
+    d = big.NewInt(0)
 	d.Mod(x, L)
 
 	//publick_key, private_key
