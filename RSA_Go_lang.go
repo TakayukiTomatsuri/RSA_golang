@@ -89,7 +89,7 @@ func Decrypt(encrypted_integers []*big.Int, d *big.Int, N *big.Int) string {
 	return string(plain_bytes)
 }
 
-func testmain() {
+func main() {
 	p := big.NewInt(29)
 	q := big.NewInt(103)
 	e := big.NewInt(13)
@@ -109,6 +109,3 @@ func testmain() {
 	fmt.Println(decrypted_text)
 }
 
-func main() {
-	testmain()
-}
